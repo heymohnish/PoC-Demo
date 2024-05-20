@@ -9,7 +9,7 @@ using PoC_Demo.Services.Interface;
 
 namespace PoC_Demo.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
     {
@@ -32,10 +32,10 @@ namespace PoC_Demo.Controllers
         public async Task<IActionResult> SignIn(Login login)
         {
             var result = await _productRepository.ValidateUser(login);
-            if(result)
+            if (result)
             {
                 var token = _tokenService.CreateToken();
-                Response.Headers.Add("Authorization", "Bearer " + token);
+                Response.Headers.Append("Authorization", "Bearer " + token);
                 return Ok("Login Success");
             }
             else

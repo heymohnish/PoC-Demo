@@ -9,7 +9,6 @@ using System.Net.Mail;
 using System.Text;
 using System.IO;
 using System.Net;
-using System.Net.Mail;
 
 
 namespace PoC_Demo.Repository
@@ -20,6 +19,7 @@ namespace PoC_Demo.Repository
 
         public ProductRepository(IConfiguration configuration) : base(configuration)
         {
+            this.Configuration = configuration;
         }
 
         public async Task<bool> AddProductAsync(Product product)
@@ -149,49 +149,57 @@ namespace PoC_Demo.Repository
         }
 
 
-        public async Task<List<UserTask>> GetTask(DateTime? date=null)
+        public async Task<List<UserTask>> GetTaskAsync(DateTime? date = null)
         {
             List<UserTask> tasks = new List<UserTask>();
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            string filePath = "C:/Users/elangovan.devaraj/Downloads/Elangovan-Status Report.xlsx";
 
-            using (ExcelPackage package = new ExcelPackage(new System.IO.FileInfo(filePath)))
+            await Task.Run(() =>
             {
-                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                string filePath = "C:/Users/elangovan.devaraj/Downloads/Elangovan-Status Report.xlsx";
 
-                int rowCount = worksheet.Dimension.Rows;
-                int colCount = worksheet.Dimension.Columns;
-
-                for (int row = 4; row <= rowCount; row++)
+                using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    bool isEmptyRow = true;
-                    for (int col = 1; col <= colCount; col++)
+                    using (ExcelPackage package = new ExcelPackage(stream))
                     {
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            isEmptyRow = false;
-                            break;
-                        }
-                    }
-                    if (!isEmptyRow)
-                    {
-                        UserTask data = new UserTask
-                        {
-                            Date = DateTime.TryParse(worksheet.Cells[row, 1].Value?.ToString(), out DateTime taskDate) ? taskDate : DateTime.MinValue,
-                            TaskDescription = worksheet.Cells[row, 2].Value?.ToString(),
-                            HoursWorked = int.TryParse(worksheet.Cells[row, 3].Value?.ToString(), out int hours) ? hours : 0,
-                            Status = worksheet.Cells[row, 4].Value?.ToString()
-                        };
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
 
-                        if (!date.HasValue || data.Date.Date == date.Value.Date)
+                        int rowCount = worksheet.Dimension.Rows;
+                        int colCount = worksheet.Dimension.Columns;
+
+                        for (int row = 4; row <= rowCount; row++)
                         {
-                            tasks.Add(data);
+                            bool isEmptyRow = true;
+                            for (int col = 1; col <= colCount; col++)
+                            {
+                                if (worksheet.Cells[row, col].Value != null)
+                                {
+                                    isEmptyRow = false;
+                                    break;
+                                }
+                            }
+                            if (!isEmptyRow)
+                            {
+                                UserTask data = new UserTask
+                                {
+                                    Date = DateTime.TryParse(worksheet.Cells[row, 1].Value?.ToString(), out DateTime taskDate) ? taskDate : DateTime.MinValue,
+                                    TaskDescription = worksheet.Cells[row, 2].Value?.ToString(),
+                                    HoursWorked = int.TryParse(worksheet.Cells[row, 3].Value?.ToString(), out int hours) ? hours : 0,
+                                    Status = worksheet.Cells[row, 4].Value?.ToString()
+                                };
+
+                                if (!date.HasValue || data.Date.Date == date.Value.Date)
+                                {
+                                    tasks.Add(data);
+                                }
+                            }
                         }
                     }
                 }
-            }
+            });
 
             return tasks;
         }
+
     }
 }
