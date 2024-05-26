@@ -1,6 +1,8 @@
 using Microsoft.OpenApi.Models;
 using PoC_Demo.Extension;
 using PoC_Demo.Middleware;
+using PoC_Demo.Repository;
+using PoC_Demo.Repository.Interface;
 using PoC_Demo.Services;
 using PoC_Demo.Services.Interface;
 
@@ -10,6 +12,7 @@ builder.Services.RegisterAuthendicationSettings();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<ITokenService, JWTService>();
+builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 builder.Services.AddScoped<EmailService>();
 
 builder.Services.AddSwaggerGen(options =>

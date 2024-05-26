@@ -22,7 +22,7 @@ namespace PoC_Demo.Controllers
             _productRepository = productRepository;
         }
 
-        [HttpPost("AddProduct")]
+        /*[HttpPost("AddProduct")]
         public async Task<IActionResult> AddProduct(Product product)
         {
             var result = await _productRepository.AddProductAsync(product);
@@ -50,6 +50,6 @@ namespace PoC_Demo.Controllers
         {
             var result = await _productRepository.RemoveProduct(id);
             return Ok(result);
-        }
+        }*/
     }
 }
