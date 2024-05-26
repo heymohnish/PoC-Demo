@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using PoC_Demo.Model;
 
 namespace PoC_Demo.Repository.Interface
@@ -20,3 +20,4 @@ namespace PoC_Demo.Repository.Interface
       
     }
 }
+

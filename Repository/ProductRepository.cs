@@ -1,4 +1,4 @@
-﻿using PoC_Demo.Model;
+using PoC_Demo.Model;
 using PoC_Demo.Repository.Interface;
 using System.Data.SqlClient;
 using System.Data;

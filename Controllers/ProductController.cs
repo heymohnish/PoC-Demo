@@ -9,7 +9,7 @@ using PoC_Demo.Services;
 namespace PoC_Demo.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -26,9 +26,10 @@ namespace PoC_Demo.Controllers
         public async Task<IActionResult> AddProduct(Product product)
         {
             var result = await _productRepository.AddProductAsync(product);
-            _emailService.SendMail(product,"New Product added");
-            return Ok(result);
+            _ = _emailService.SendMail(product, "New Product added");
+            return result ? Ok("Product added successfully") :BadRequest("Something went wrong");
         }
+
 
         [HttpGet("GetProduct")]
         public async Task<IActionResult> GetProduct()

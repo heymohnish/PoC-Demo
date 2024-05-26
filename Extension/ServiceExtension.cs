@@ -23,22 +23,25 @@ namespace PoC_Demo.Extension
             services.AddTransient(provider =>
             {
                 var configuration = provider.GetRequiredService<IConfiguration>();
-                return configuration.GetSection("JWT").Get<JWTSettings>();
+                return configuration.GetSection("JWT").Get<JWTSettings>()??new JWTSettings();
             });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
              .AddJwtBearer(options =>
              {
-                 var jwtSettings = services.BuildServiceProvider().GetService<IConfiguration>().GetSection("JWT");
-                 options.TokenValidationParameters = new TokenValidationParameters
+                 var jwtSettings = services.BuildServiceProvider().GetService<IConfiguration>()?.GetSection("JWT");
+                 if(jwtSettings != null)
                  {
-                     ValidateIssuer = true,
-                     ValidateAudience = true,
-                     ValidateLifetime = true,
-                     ValidateIssuerSigningKey = true,
-                     ValidIssuer = jwtSettings["Issuer"],
-                     ValidAudience = jwtSettings["Audience"],
-                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
-                 };
+                     options.TokenValidationParameters = new TokenValidationParameters
+                     {
+                         ValidateIssuer = true,
+                         ValidateAudience = true,
+                         ValidateLifetime = true,
+                         ValidateIssuerSigningKey = true,
+                         ValidIssuer = jwtSettings["Issuer"],
+                         ValidAudience = jwtSettings["Audience"],
+                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]??""))
+                     };
+                 }
              });
             return services;
         }

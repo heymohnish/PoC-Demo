@@ -5,7 +5,7 @@ using PoC_Demo.Repository.Interface;
 
 namespace PoC_Demo.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class TaskController : ControllerBase
     {
@@ -17,10 +17,11 @@ namespace PoC_Demo.Controllers
         }
 
         [HttpGet("GetTask")]
-        public async Task<IActionResult> GetTask(DateTime? date)
+        public async Task<IActionResult> GetTask(DateTime? date = null)
         {
-            var result= await _productRepository.GetTask(date);
-            return result.Count != 0 ? Ok(result) : BadRequest("Could you give me the exact date...?");
+            var result = await _productRepository.GetTaskAsync(date);
+            return result.Count != 0 ? Ok(result) : BadRequest("Could you give me the exact date?");
         }
+
     }
 }
