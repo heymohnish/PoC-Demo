@@ -148,7 +148,50 @@ namespace PoC_Demo.Repository
             }
         }
 
+        public async Task<User> GetUserByEmailAndPassword(string email, string password)
+        {
+            try
+            {
+                OpenConnection();
+                using (SqlCommand command = new SqlCommand("GetUserByEmailAndPassword", SqlConnection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Email", email);
+                        command.Parameters.AddWithValue("@Password", password);
 
+                        SqlDataReader reader = await command.ExecuteReaderAsync();
+
+                        if (reader.HasRows)
+                        {
+                            await reader.ReadAsync();
+                            return new User
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("id")),
+                                FirstName = reader.GetString(reader.GetOrdinal("first_name")),
+                                LastName = reader.GetString(reader.GetOrdinal("last_name")),
+                                Email = reader.GetString(reader.GetOrdinal("email")),
+                                Phone = reader.GetString(reader.GetOrdinal("phone")),
+                                CreatedDate = reader.GetDateTime(reader.GetOrdinal("created_date")),
+                                ModifiedDate = reader.GetDateTime(reader.GetOrdinal("modified_date"))
+                            };
+                        }
+                        else
+                        {
+                            return null; // User not found
+                        }
+                    }
+            }
+            catch (Exception ex)
+            {
+                // Log or handle exception
+                Console.WriteLine("Error fetching user: " + ex.Message);
+                return null;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
         public async Task<List<UserTask>> GetTask(DateTime? date=null)
         {
             List<UserTask> tasks = new List<UserTask>();

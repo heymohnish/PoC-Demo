@@ -28,7 +28,7 @@ namespace PoC_Demo.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpPost("signin")]
+        /*[HttpPost("signin")]
         public async Task<IActionResult> SignIn(Login login)
         {
             var result = await _productRepository.ValidateUser(login);
@@ -42,7 +42,15 @@ namespace PoC_Demo.Controllers
             {
                 return BadRequest("Wrong username/password");
             }
+        }*/
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(User user)
+        {
+            var result = await _productRepository.GetUserByEmailAndPassword(user.Email,user.Password);
+            var token = _tokenService.CreateToken();
+            return Ok(token);
         }
 
     }
 }
+

@@ -1,4 +1,5 @@
-﻿using PoC_Demo.Model;
+﻿using Microsoft.AspNetCore.Mvc;
+using PoC_Demo.Model;
 
 namespace PoC_Demo.Repository.Interface
 {
@@ -15,5 +16,7 @@ namespace PoC_Demo.Repository.Interface
         Task<bool> RemoveProduct(int id);
 
         Task<List<UserTask>> GetTask(DateTime? date);
+        Task<User> GetUserByEmailAndPassword(string email, string password);
+      
     }
 }
